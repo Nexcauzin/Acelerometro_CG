@@ -1,3 +1,4 @@
+import kalman_filter
 import smbus  # import SMBus module of I2C
 from time import sleep  # import
 import math
@@ -82,13 +83,32 @@ while True:
     AngleRoll = math.atan(AccY/math.sqrt((AccX*AccX)+(AccZ*AccZ)))*1/(3.142/180)
     AnglePitch = math.atan(AccX/math.sqrt((AccY*AccY)+(AccZ*AccZ)))*1/(3.142/180)
 
+    # Variáveis para o Filtro de Kalman
+    KalmanAngleRoll = 0
+    KalmanAnglePitch = 0
+
+    KalmanUncertaintyAngleRoll = 2*2
+    KalmanUncertaintyAnglePitch = 2*2
+
+    # Roll
+    Roll_Output = kalman_filter.kalman_1d(KalmanAngleRoll, KalmanUncertaintyAngleRoll, RateRoll, AngleRoll)
+    KalmanAngleRoll= Roll_Output[0]
+    KalmanUncertaintyAngleRoll = Roll_Output[1]
+
+    # Pitch
+    Pitch_Output = kalman_filter.kalman_1d(KalmanAnglePitch, KalmanUncertaintyAnglePitch, RatePitch, AnglePitch)
+    KalmanAnglePitch = Pitch_Output[0]
+    KalmanUncertaintyAnglePitch = Pitch_Output[1]
+
+    print(f'Roll: {KalmanAngleRoll} | Pitch: {KalmanAnglePitch}')
+
     # Esse print é para a calibração dos sensores
     # Basicamente o valor mostrado precisa ser = 1.00 para a posição do sensor nos eixos, serve para
     # Pegar um fator de correção para o cálculo dos ângulos
     # Comenta quando não usar
-    print(f'AccX [g] = {AccX} | AccY [g] = {AccY} | AccZ = {AccZ}')
+    #print(f'AccX [g] = {AccX} | AccY [g] = {AccY} | AccZ = {AccZ}')
 
     # Printando na tela os valores de ângulo atual
-    print(f'Roll angle [º] = {AngleRoll} | Pitch angle [º] = {AnglePitch}')
+    #print(f'Roll angle [º] = {AngleRoll} | Pitch angle [º] = {AnglePitch}')
 
     sleep(1) # Delay do código, por padrão estamos usando 0.1 na telemetria

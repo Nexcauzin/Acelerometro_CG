@@ -17,5 +17,3 @@ for i in range(0, 10):
     if buffer_pares:  # Verifica se buffer_pares não está vazio
         buffer_ROL = [buffer_pares[0][1], buffer_pares[0][0]]
         print("Valores no buffer:", buffer_ROL)
-
-
